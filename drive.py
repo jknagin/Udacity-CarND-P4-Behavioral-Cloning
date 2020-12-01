@@ -1,20 +1,18 @@
 import argparse
 import base64
-from datetime import datetime
 import os
 import shutil
-
-import numpy as np
-import socketio
-import eventlet
-import eventlet.wsgi
-from PIL import Image
-from flask import Flask
+from datetime import datetime
 from io import BytesIO
 
-from keras.models import load_model
+import eventlet.wsgi
 import h5py
+import numpy as np
+import socketio
+from PIL import Image
+from flask import Flask
 from keras import __version__ as keras_version
+from keras.models import load_model
 
 sio = socketio.Server()
 app = Flask(__name__)
@@ -133,7 +131,7 @@ if __name__ == '__main__':
         print("NOT RECORDING THIS RUN ...")
 
     # wrap Flask application with engineio's middleware
-    app = socketio.Middleware(sio, app)
+    app = socketio.WSGIApp(sio, app)
 
     # deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
