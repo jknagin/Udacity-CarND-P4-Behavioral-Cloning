@@ -102,3 +102,14 @@ The final model architecture consisted of a convolution neural network with the 
 I randomly shuffled the data set supplied by Udacity and put 20% of the data into a validation set. 
 
 I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 5 as evidenced by the fact that the training and validation losses stopped decreasing significantly after 5 epochs. I used an Adam optimizer so that manually tuning the learning rate wasn't necessary.
+
+Below is an image in the training data, taken from a simulated camera mounted at the center of the vehicle:
+
+![center.jpg](img/center.jpg)
+
+The dataset also contains images taken from simulated left and right side cameras, as shown below:
+
+![left.jpg](img/left.jpg)
+![right.jpg](img/right.jpg)
+
+The dataset contains a steering angle for each (center, left, right) image tuple for each point in time. To train the network using the left and right camera images, a correction factor was applied to the steering angle assigned to each tuple, which is based on the center camera image.
