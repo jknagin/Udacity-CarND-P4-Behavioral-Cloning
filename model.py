@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -9,23 +8,22 @@ from keras.layers.core import Dense, Activation, Flatten
 from keras.models import Sequential
 
 
+#  Use PIL.Image to read images in RGB format
 def read_image(fname: str) -> np.ndarray:
     return np.array(Image.open(fname))
 
 
 def main():
-    # Seed RNG
+    # Seed RNG for repeatability
     np.random.seed(1)
 
     # Load data
     print("Loading data...")
-
-#     data_directory = os.path.join("..", "data")
     data_directory = "data"
     driving_log = pd.read_csv(os.path.join(data_directory, "driving_log.csv")).values
     X = []
     y = []
-    steering_correction = 0.2
+    steering_correction = 0.2  # steering correction for left and right camera images. Add correction for left images, subtract for right images
     for idx in range(driving_log.shape[0]):
         steering = driving_log[idx, 3]
         # Center
@@ -33,7 +31,7 @@ def main():
         y.append(steering)
         # Left
         X.append(read_image(os.path.join(data_directory, driving_log[idx, 1].strip())))
-        y.append(steering + steering_correction)
+        y.append(steering + steering_correction) 
         # Right
         X.append(read_image(os.path.join(data_directory, driving_log[idx, 2].strip())))
         y.append(steering - steering_correction)
@@ -45,15 +43,17 @@ def main():
     # validation split
     valid_split = 0.2
 
-    # Preprocessing function
+    # Preprocessing function, used as a Lambda layer at the beginning of the model
     def preprocessing(x):
         # Normalize each pixel to values in [-0.5, 0.5]
         return x/255.0 - 0.5
 
     # Construct model using Keras
+    # Model is heavily based on suggested architecture from the lecture materials
+    # Batch norm layers are added to speed up training while preventing overfitting
     model = Sequential()
     model.add(Lambda(preprocessing, input_shape=(160, 320, 3)))
-    model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+    model.add(Cropping2D(cropping=((70, 25), (0, 0))))  # Remove unnecessary pixels on top (sky) and bottom (frontal body of car) from each image
     model.add(Convolution2D(24, 5, 5, subsample=(2, 2), activation="relu"))
     model.add(BatchNormalization())
     model.add(Convolution2D(36, 5, 5, subsample=(2, 2), activation="relu"))
