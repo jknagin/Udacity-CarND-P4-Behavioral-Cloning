@@ -18,6 +18,8 @@ def main():
     np.random.seed(1)
 
     # Load data
+    # It was found via experimentation that a generator was not needed to successfully train the model.
+    # Hence, no generator is used.
     print("Loading data...")
     data_directory = "data"
     driving_log = pd.read_csv(os.path.join(data_directory, "driving_log.csv")).values
