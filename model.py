@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from PIL import Image
-from keras.layers import Lambda, Cropping2D
+from keras.layers import Lambda, Cropping2D, BatchNormalization
 from keras.layers.convolutional import Convolution2D
 from keras.layers.core import Dense, Activation, Flatten
 from keras.models import Sequential
@@ -55,9 +55,13 @@ def main():
     model.add(Lambda(preprocessing, input_shape=(160, 320, 3)))
     model.add(Cropping2D(cropping=((70, 25), (0, 0))))
     model.add(Convolution2D(24, 5, 5, subsample=(2, 2), activation="relu"))
+    model.add(BatchNormalization())
     model.add(Convolution2D(36, 5, 5, subsample=(2, 2), activation="relu"))
+    model.add(BatchNormalization())
     model.add(Convolution2D(48, 5, 5, subsample=(2, 2), activation="relu"))
+    model.add(BatchNormalization())
     model.add(Convolution2D(64, 3, 3, activation="relu"))
+    model.add(BatchNormalization())
     model.add(Convolution2D(64, 3, 3, activation="relu"))
     model.add(Flatten())
     model.add(Dense(100))
